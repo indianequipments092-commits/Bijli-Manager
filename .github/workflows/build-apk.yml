@@ -1,15 +1,21 @@
 name: Build APK
 
 on:
+  workflow_dispatch:
   push:
     branches: [main, master]
-  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Check URL set hai ya nahi
+        run: |
+          if grep -q "YOUR-USERNAME" capacitor.config.json; then
+            echo "capacitor.config.json me apna GitHub Pages link daalo (server.url)"; exit 1
+          fi
 
       - uses: actions/setup-node@v4
         with:
@@ -20,25 +26,20 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      - name: Install dependencies
-        run: npm install
+      - run: npm install
+      - run: npx cap add android
 
-      - name: Add Android platform
-        run: npx cap add android
-
-      - name: Generate app icon and splash
+      - name: Icon aur splash
         run: npx --yes @capacitor/assets generate --android
         continue-on-error: true
 
-      - name: Sync web files
-        run: npx cap sync android
+      - run: npx cap sync android
 
       - name: Build debug APK
         working-directory: android
         run: ./gradlew assembleDebug
 
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
           name: bijli-manager-apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
