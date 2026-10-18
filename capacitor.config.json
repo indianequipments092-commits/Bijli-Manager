@@ -1,5 +1,8 @@
 {
   "appId": "com.bijli.manager",
   "appName": "Bijli Manager",
-  "webDir": "www"
+  "webDir": "www",
+  "server": {
+    "url": "https://indianequipments092-commits.github.io/Bijli-Manager-2/"
+  }
 }
