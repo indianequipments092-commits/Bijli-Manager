@@ -35,6 +35,12 @@ jobs:
 
       - run: npx cap sync android
 
+      - name: Add mic permission
+        run: |
+          M=android/app/src/main/AndroidManifest.xml
+          grep -q RECORD_AUDIO $M || sed -i 's#<application#<uses-permission android:name="android.permission.RECORD_AUDIO" />\n    <application#' $M
+          grep -n "uses-permission" $M
+
       - name: Build debug APK
         working-directory: android
         run: ./gradlew assembleDebug
@@ -43,3 +49,4 @@ jobs:
         with:
           name: bijli-manager-apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
+          
